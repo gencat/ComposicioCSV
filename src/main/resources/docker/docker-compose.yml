@@ -1,0 +1,23 @@
+httpd:
+ build: ./httpd/
+ links:
+  - app:tomcat
+ ports:
+  - 80:80
+ deploy:
+	resources:
+		limits:
+			memory: 2048m
+		reservations:
+			memory: 1972m
+app:
+  build: ./app/
+  ports:
+   - 8080:8080
+deploy:
+	resources:
+		limits:
+			memory: 2048m
+		reservations:
+			memory: 1972m
+   

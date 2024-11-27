@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<RollingFile name="COMPOSICIO_CSV_LOG" fileName="/data/STD/logs/composicio-csv-PRE.log" filePattern="/data/STD/logs/%d{ddMMyyyy}_composicio-csv-PRE.log" append="true">
+			<PatternLayout pattern="canigo Message: %d{dd MM yyyy HH:mm:ss,SSS} %-5p [%t] %-5p [%t] %c - %m%n"/>
+		    <Policies>
+		    	<TimeBasedTriggeringPolicy interval="1"/>
+		    </Policies>                               
+		</RollingFile>
+		<RollingFile name="INSTRUMENTACIO_COMPOSICIO_PDF_LOG" fileName="/data/STD/logs/composicioPDF-instrumentacio-PRE.log" filePattern="/data/STD/logs/%d{ddMMyyyy}_composicioPDF-instrumentacio-PRE.log" append="true">
+			<PatternLayout pattern="%m%n"/>
+		    <Policies>
+		    	<TimeBasedTriggeringPolicy interval="1"/>
+		    </Policies>                               
+		</RollingFile>
+		<RollingFile name="INSTRUMENTATION_CODI_SEGUR_VERIFICACIO_LOG" fileName="/data/STD/logs/codiSegurVerificacio-instrumentacio-PRE.log" filePattern="/data/STD/logs/%d{ddMMyyyy}_codiSegurVerificacio-instrumentacio-PRE.log" append="true">
+			<PatternLayout pattern="%m%n"/>
+		    <Policies>
+		    	<TimeBasedTriggeringPolicy interval="1"/>
+		    </Policies>                               
+		</RollingFile>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="canigo Message: %d{dd MM yyyy HH:mm:ss,SSS} %-5p [%t] %-5p [%t] %c - %m%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Logger name="cat.gencat.ctti" level="debug" additivity="false">
+			<AppenderRef ref="STDOUT" />
+		</Logger>
+		<Logger name="cat.gencat.ctti" level="error" additivity="false">
+			<AppenderRef ref="COMPOSICIO_CSV_LOG" />
+		</Logger>
+		<Logger name="cat.gencat.ctti.canigo.arch.operation.instrumentation.live.LiveInstrumentationImpl" level="error" additivity="false">
+			<AppenderRef ref="STDOUT" />
+		</Logger>
+		<Logger name="cat.gencat.ctti.std.composicio.aspect.ComposicioPDFAspectTraceSTD" level="info" additivity="false">
+			<AppenderRef ref="INSTRUMENTACIO_COMPOSICIO_PDF_LOG" />
+		</Logger>
+		<Logger name="cat.gencat.ctti.std.csv.aspect.CodiSegurVerificacioAspectTraceSTD" level="info" additivity="false">
+			<AppenderRef ref="INSTRUMENTATION_CODI_SEGUR_VERIFICACIO_LOG" />
+		</Logger>
+		<Logger name="org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler" level="error" additivity="false">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="COMPOSICIO_CSV_LOG" />
+		</Logger>
+		<Root level="warn">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="COMPOSICIO_CSV_LOG" />
+		</Root>
+	</Loggers>
+</Configuration>

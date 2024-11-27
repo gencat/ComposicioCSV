@@ -1,0 +1,48 @@
+version: 2.0.0
+info:
+  description: STD2-composiciocsv
+global-env:
+  - CONTAINER_DOCKERFILE_PATH: target/STD2_ComposicioCSV-docker-compose/app/Dockerfile
+  - CONTAINER_IMAGE_NAME: std2-composicio_csv
+  - DEPLOYMENT_TYPE: DeploymentConfig
+components:
+  - build:
+      steps:
+        - container:
+            image:
+              remote:
+                name: docker-registry.ctti.extranet.gencat.cat/gencat-sic-builders/mvn-builder:1.0-3.6-8
+            resources:
+              limits:
+                cpu: 1000m
+                memory: 1024Mi
+              requests:
+                cpu: 100m
+                memory: 128Mi
+          execution:
+            commands:
+              - mvn clean package -Dmaven.test.skip=true
+    deployment:
+      scm: https://git.intranet.gencat.cat/0189/STD2-deploymentDescriptors.git
+      environments:
+        - name: preproduction
+          actions:
+            deploy:
+              steps:
+                - execution:
+                    env:
+                      - DESCRIPTORS_PATH: pre/ymls/std2-composicio_csv
+                      - DEPLOYMENT_NAME: std2-composicio-csv-deployment
+                      - DEPLOYMENT_WAIT: 600
+        - name: production
+          actions:
+            deploy:
+              steps:
+                - execution:
+                    env:
+                      - DESCRIPTORS_PATH: pro/ymls/std2-composicio_csv
+                      - DEPLOYMENT_NAME: std2-composicio-csv-deployment
+                      - DEPLOYMENT_WAIT: 600
+notifications:
+  email:
+    recipients: []

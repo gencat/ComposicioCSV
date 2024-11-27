@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta http-equiv="refresh" content="60">
+	<title>Monitorització Serveis</title>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+ 
+ 	<script>
+ 	
+ 		function drawCharts(){
+ 			$.ajax({
+ 				type: 'GET',
+ 				url: 'api/info/monitoring/time/',
+ 				dataType: 'json',
+ 				contentType: "application/json; charset=utf-8", 
+ 				success: function(responseData) {
+ 					var ctx = document.getElementById("chart_temps_mig").getContext('2d');
+ 					var myChart = new Chart(ctx, {
+ 						type : 'line',
+ 						data : { labels: responseData.times,
+ 								 datasets: [{
+ 									 label: "Temps mig peticions (ms)",
+ 									 data: responseData.values,
+ 									 fill:false,
+ 									 borderColor: "blue",
+ 									 lineTension: 0.1
+ 								 }]
+ 						},
+ 						options : {
+ 							legend: {
+ 					            display: false,
+ 							},
+ 					        title: {
+ 					            display: true,
+ 					           	fontSize: 16,
+ 					           	fontStyle: 'bold',
+ 					            text: 'Temps mig peticions (ms)'
+ 					        }
+ 					    }
+ 					});
+ 					
+ 				},
+ 				error: function (responseData) {
+ 					alert('Error al carregar la gràfica de temps mig');
+ 				}
+ 			});
+
+ 		
+ 		 	$.ajax({
+ 				type: 'GET',
+ 				url: 'api/info/monitoring/request/',
+ 				dataType: 'json',
+ 				contentType: "application/json; charset=utf-8", 
+ 				success: function(responseData) {
+ 					var ctx = document.getElementById("chart_peticions").getContext('2d');
+ 					var myChart = new Chart(ctx, {
+ 						type : 'line',
+ 						data : { labels: responseData.times,
+ 								 datasets: [{
+ 									 data: responseData.values,
+ 									 fill:false,
+ 									 borderColor: "blue",
+ 									 lineTension: 0.1
+ 								 }]
+ 						},
+ 						options : {
+ 							legend: {
+ 					            display: false,
+ 							},
+ 					        title: {
+ 					            display: true,
+ 					           	fontSize: 16,
+ 					           	fontStyle: 'bold',
+ 					            text: 'Peticions'
+ 					        }
+ 					    }
+ 					});
+ 					
+ 				},
+ 				error: function (responseData) {
+ 					alert('Error al carregar la gràfica de peticions');
+ 				}
+ 			});
+ 		 	
+ 		 	$.ajax({
+ 				type: 'GET',
+ 				url: 'api/info/monitoring/errors/',
+ 				dataType: 'json',
+ 				contentType: "application/json; charset=utf-8", 
+ 				success: function(responseData) {
+ 					var ctx = document.getElementById("chart_errors").getContext('2d');
+ 					var myChart = new Chart(ctx, {
+ 						type : 'line',
+ 						data : { labels: responseData.times,
+ 								 datasets: [{
+ 									 data: responseData.values,
+ 									 fill:false,
+ 									 borderColor: "blue",
+ 									 lineTension: 0.1
+ 								 }]
+ 						},
+ 						options : {
+ 							legend: {
+ 					            display: false,
+ 							},
+ 					        title: {
+ 					            display: true,
+ 					           	fontSize: 16,
+ 					           	fontStyle: 'bold',
+ 					            text: 'Errors'
+ 					        }
+ 					    }
+ 					});
+ 					
+ 				},
+ 				error: function (responseData) {
+ 					alert('Error al mostrar la gràfica errors');
+ 				}
+ 			});
+ 		}
+ 		
+ 		$(document).ready(function() {
+ 			
+ 			$.ajax({
+ 				type: 'GET',
+ 				url: 'api/info/monitoring/getSize/',
+ 				success: function(responseData) {
+ 					document.getElementById('size').value = responseData;
+ 				},
+ 				error: function (responseData) {
+ 					alert('Error al carregar el tamany de la cua');
+ 				}
+ 			});
+ 			
+ 			$.ajax({
+ 				type: 'GET',
+ 				url: 'api/info/monitoring/getInterval/',
+ 				success: function(responseData) {
+ 					document.getElementById('interval').value = responseData;
+ 				},
+ 				error: function (responseData) {
+ 					alert('Error al carregar el interval de refesc');
+ 				}
+ 			});
+ 			
+ 			$.ajax({
+ 				type: 'GET',
+ 				url: 'api/info/monitoring/diskUsage/diskInfo/',
+ 				success: function(responseData) {
+ 					document.getElementById('osDiskValue').value = responseData.osDiskValue;
+ 					document.getElementById('osDiskSize').value = responseData.osDiskSize;
+ 					document.getElementById('jeeServerDiskValue').value = responseData.jeeServerDiskValue;
+ 					document.getElementById('jeeServerDiskSize').value = responseData.jeeServerDiskSize;
+ 					
+ 				},
+ 				error: function (responseData) {
+ 					alert('Error al carregar la utilitzacio del disc');
+ 				}
+ 			});
+ 			 
+ 			$('#reload').click(function() {
+				$.ajax({
+					type: 'PUT',
+					url: 'api/info/monitoring/reload/',
+					data: {
+						interval: $('#interval').val()
+		            },
+					success: function(responseData) {
+					},
+					error: function (responseData) {
+						alert('Reload ha fallat');
+					}
+				});
+			});
+ 			
+ 			$('#resize').click(function() {
+ 				$.ajax({
+ 					type: 'PUT',
+ 					url: 'api/info/monitoring/sizeQueue/',
+ 					data: {
+ 		                size: $('#size').val()
+ 		            },
+ 					success: function(responseData) {
+ 					},
+ 					error: function (responseData) {
+ 						alert('Resize ha fallat');
+ 					}
+ 				});
+ 			});
+ 			
+ 		});
+ 	
+ 	</script>
+ 	
+</head>
+
+<body onload="drawCharts()">
+
+	<div style="position: relative; left: 10%;">
+	
+		<!-- Temps mig -->
+		<div id="temps_mig" style="width: 900px; height: 500px;">
+			<canvas id="chart_temps_mig"></canvas>
+		</div>
+		
+		<!-- Nombre de peticions -->
+		<div id="peticions" style="width: 900px; height: 500px;">
+			<canvas id="chart_peticions"></canvas>
+		</div>
+		
+		<!-- Nombre d'errors -->
+		<div id="errors" style="width: 900px; height: 500px;">
+			<canvas id="chart_errors"></canvas>
+		</div>
+		
+		<!-- Disk -->
+		<h3>Monitorització FileSystem</h3>
+		
+		<table>
+			<tr>
+				<th style="font-weight: normal; text-align: left" width="40%">
+					<label for="size" >Grandària de la cua: </label> 
+				</th>
+				<th width="40%">
+					<input type="text" id="size" name="size" style="text-align: right"/>
+					
+				</th>
+				<th>
+					<input type="button" value="Desar" id="resize" name="resize"  />
+				</th>
+			</tr>
+			<tr>
+				<th style="font-weight: normal; text-align: left">
+					<label for="size">Interval de refesc: </label> 
+				</th>
+				<th>
+					<input type="text" id="interval" name="interval" style="text-align: right"/>
+				</th>
+				<th>
+					<input type="button" value="Desar" id="reload" name="reload"  />
+				</th>
+			</tr>
+		</table>
+		
+		<br><br><br>
+		
+		<table >
+			<tr>
+				<td style="width: 30%; font-weight: bold">
+					<label for="filesystem">Filesystem </label> 
+				</td>
+				<td style="width: 30%; font-weight: bold; text-align: right">
+					<label for="free">Espai Lliure </label> 
+				</td>
+				<td style="width: 40%; font-weight: bold; text-align: right">
+					<label for="total">Capacitat disc </label> 
+				</td>
+			</tr>
+			<tr>
+				<td style="width: 30%;">
+					<label for="osDisk">SO: </label>
+				</td>
+				<td style="width: 30%; text-align: center">
+					<input type="text" id="osDiskValue" name="osDiskValue" style="text-align: right; border-width: 0px" readonly/>
+				</td>
+				<td style="width: 40%; text-align: center">
+					<input type="text" id="osDiskSize" name="osDiskSize" style="text-align: right; border-width: 0px" readonly/>
+				</td>
+			</tr>
+		</table>
+		
+	</div>
+</body>
+
+
+
+</html>
